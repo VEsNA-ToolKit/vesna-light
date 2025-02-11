@@ -1,0 +1,10 @@
+mas vesna {
+    
+    agent vesna:vesna.asl {
+        beliefs:    address( localhost )
+                    port( 9080 )
+        goals:      start
+        ag-class:   vesna.VesnaAgent
+    }
+
+}
