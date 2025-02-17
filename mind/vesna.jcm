@@ -1,10 +1,25 @@
 mas vesna {
     
-    agent vesna:vesna.asl {
+    agent junior_1:junior.asl {
         beliefs:    address( localhost )
                     port( 9080 )
         goals:      start
         ag-class:   vesna.VesnaAgent
+        focus:      white_pages
+    }
+
+    // agent test : ssend_test.asl
+
+    agent boss_1:boss.asl {
+        focus:    white_pages
+    }
+    agent boss_2:boss.asl {
+        focus:    white_pages
+    }
+
+    workspace office {
+        agents: junior_1, boss_1
+        artifact white_pages : vesna.WhitePages
     }
 
 }
