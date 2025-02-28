@@ -16,6 +16,7 @@ public class VesnaAgent extends Agent implements WsClientMsgHandler {
 
         super.loadInitialAS( asSrc );
 
+        // TODO: add a check of belief existence
         Unifier address_unifier = new Unifier();
         believes( parseLiteral( "address( Address )" ), address_unifier );
         String address = address_unifier.get( "Address" ).toString();
@@ -37,16 +38,18 @@ public class VesnaAgent extends Agent implements WsClientMsgHandler {
     }
 
     private void sense( Literal perception ) {
-        try {
-            InternalAction signal = getIA( ".signal" );
-            StringTerm type = createString( "+" + perception.toString() );
-            Unifier un = new Unifier();
-            TransitionSystem ts = getTS();
-            Term[] event_list = new Term[] { type };
-            signal.execute( ts, un, event_list );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-        }
+        // // try {
+        // //     InternalAction signal = getIA( ".signal" );
+        // //     StringTerm type = createString( "+" + perception.toString() );
+        // //     Unifier un = new Unifier();
+        // //     TransitionSystem ts = getTS();
+        // //     Term[] event_list = new Term[] { type };
+        // //     signal.execute( ts, un, event_list );
+        // // } catch ( Exception e ) {
+        // //     e.printStackTrace();
+        // // }
+        Message signal = new Message( "signal", getTS().getAgArch().getAgName(), "self" , perception );
+        getTS().getAgArch().sendMsg( signal );
     }
 
     private void handle_event( JSONObject event ) {
