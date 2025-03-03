@@ -3,6 +3,8 @@ package vesna;
 import jason.JasonException;
 import jason.asSemantics.*;
 import jason.asSyntax.*;
+import jason.runtime.RuntimeServicesFactory;
+
 import static jason.asSyntax.ASSyntax.*;
 
 import java.net.URI;
@@ -10,14 +12,16 @@ import java.net.URI;
 import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
-public class VesnaAgent extends Agent implements WsClientMsgHandler {
+public class VesnaAgent extends Agent{// implements WsClientMsgHandler {
 
     private WsClient client;
+    private String my_name;
 
     @Override
     public void loadInitialAS( String asSrc ) throws Exception {
 
         super.loadInitialAS( asSrc );
+        my_name = getTS().getAgArch().getAgName();
 
         // TODO: add a check of belief existence
         Unifier address_unifier = new Unifier();
@@ -46,9 +50,19 @@ public class VesnaAgent extends Agent implements WsClientMsgHandler {
 
         URI body_address = new URI( "ws://" + address + ":" + port );
         client = new WsClient( body_address );
-        client.setMsgHandler( this::handle_msg );
-        client.connect();
+        client.setMsgHandler( new WsClientMsgHandler() {
 
+            @Override
+            public void handle_msg( String msg ) {
+                vesna_handle_msg( msg );
+            }
+
+            @Override
+            public void handle_error( Exception ex ) {
+                vesna_handle_error( ex );
+            }
+        }  );
+        client.connect();
     }
 
     public void perform( String action ) {
@@ -67,7 +81,7 @@ public class VesnaAgent extends Agent implements WsClientMsgHandler {
         // //     e.printStackTrace();
         // // }
         try {
-            Message signal = new Message( "signal", getTS().getAgArch().getAgName(), "self" , perception );
+            Message signal = new Message( "signal", my_name, "self" , perception );
         } catch ( Exception e ) {
             e.printStackTrace();
         }
@@ -92,8 +106,7 @@ public class VesnaAgent extends Agent implements WsClientMsgHandler {
         }
     }
 
-    @Override
-    public void handle_msg( String msg ) {
+    public void vesna_handle_msg( String msg ) {
         System.out.println( "Received message: " + msg );
         JSONObject log = new JSONObject( msg );
         String sender = log.getString( "sender" );
@@ -113,12 +126,36 @@ public class VesnaAgent extends Agent implements WsClientMsgHandler {
     }
 
     private void stop( String reason ) {
-        System.out.println( "[ERROR] " + reason );
+        System.out.println( "[" + my_name + " ERROR] " + reason );
         // // try {
         // //     addBel( createLiteral( "error", createString( reason ) ) );
         // // } catch( Exception e ){
         // //     e.printStackTrace();
         // // }
-        this.stopAg();
+        // // this.stopAg();
+        kill_agent();
+    }
+
+    public void vesna_handle_error( Exception ex ){
+        System.out.println( "[" + my_name + " ERROR] " + ex.getMessage() );
+        // // this.stopAg();
+        kill_agent();
+    }
+
+    private void kill_agent() {
+        System.out.println( "[" + my_name + " ERROR] Killing agent" );
+        try {
+            InternalAction drop_all_desires = getIA( ".drop_all_desires" );
+            InternalAction drop_all_intentions = getIA( ".drop_all_intentions" );
+            InternalAction drop_all_events = getIA( ".drop_all_events" );
+            InternalAction action = getIA( ".kill_agent" );
+
+            drop_all_desires.execute( getTS(), new Unifier(), new Term[] {} );
+            drop_all_intentions.execute( getTS(), new Unifier(), new Term[] {} );
+            drop_all_events.execute( getTS(), new Unifier(), new Term[] {} );
+            action.execute( getTS(), new Unifier(), new Term[] { createString( my_name ) } );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
     }
 }
