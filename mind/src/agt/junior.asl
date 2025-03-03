@@ -35,9 +35,14 @@
         .term2string( BossDesk, BossDeskStr );
         !go_to( BossDesk );
         .print( "I send a public ", Msg , " to ", Boss, "with performative ", Performative );
-        vesna.ssendnew( public, Boss, Performative, Msg );
+        // // kqml_s.send( public, Boss, Performative, Msg );
+        .send( public, Boss, Performative, Msg );
         .print( "I send a private ", Msg , " to ", Boss, "with performative ", Performative );
-        vesna.ssendnew( private, Boss, Performative, Msg ).
+        // // kqml_s.send( private, Boss, Performative, Msg );
+        .send( private, Boss, Performative, Msg );
+        .print( "I send a public ", Msg , " to all with performative ", Performative );
+        // // kqml_s.send( public, all, Performative, Msg ).
+        .send( public, all, Performative, Msg ).
 
 +!take_coffe
     <-  !go_to(  coffee_machine );

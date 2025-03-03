@@ -1,3 +1,4 @@
+// RCC Rules
 po( X, Y ) :- map_po( X, Y ).
 po( Y, X ) :- map_po( X, Y ).
 
@@ -7,6 +8,7 @@ ntppi( Y, X ) :- map_ntpp( X, Y ).
 ec( X, Y ) :- map_ec( X, Y ).
 ec( Y, X ) :- map_ec( X, Y ).
 
+// Check if two regions are subregions of the same one
 same_region( Region1, Region2 ) :- ntpp( Region1, SuperRegion ) & ntpp( Region2, SuperRegion ).
 
 +!go_to( Target )
@@ -40,11 +42,17 @@ same_region( Region1, Region2 ) :- ntpp( Region1, SuperRegion ) & ntpp( Region2,
 +!go_to( Target )
     :   .my_name( Me ) & ntpp( Me, MyRegion ) & ntpp( Target, TargetRegion )
     <-  .print( "I am really far away, I have to reason a bit logically...");
-        ?find_path( MyRegion, TargetRegion, RPath );
+        if ( TargetRegion == office ){
+            ?find_path( MyRegion, Target, RPath );
+        } else {
+            ?find_path( MyRegion, TargetRegion, RPath );
+        }
         .delete( MyRegion, RPath, LPath );
         .reverse( LPath, Path );
         !follow_path( Path );
-        !go_to( Target ).
+        if ( not TargetRegion == office ) {
+            !go_to( Target );
+        }.
 
 +!follow_path( [] )
     <-  .print( "Destination reached").
@@ -58,19 +66,10 @@ same_region( Region1, Region2 ) :- ntpp( Region1, SuperRegion ) & ntpp( Region2,
         +ntpp( Me, Head );
         !follow_path( Tail ).
 
-// -ntpp( Person, Region )
-//     :   .my_name( Person )
-//     <-  .broadcast( untell, ntpp( Person, Region ) ).
-
-+ntpp( Person, Region )
-    :   .my_name( Person )
-    <-  update_location( Person, Region ).
-  //       .broadcast( tell, ntpp( Person, Region ) ).
-
 find_path( Start, Target, Path ) :- find_path_recursive( Start, Target, [ Start ], Path ).
 
 find_path_recursive( Target, Target, Visited, Visited ).
-find_path_recursive( Current, Target, Visited, Path ) :- ( po( Current, Next ) | ec( Current, Next ) ) & not .member( Next, Visited ) & find_path_recursive(Next, Target, [ Next | Visited ], Path ).
+find_path_recursive( Current, Target, Visited, Path ) :- ( po( Current, Next ) | ec( Current, Next ) ) & not .member( Next, Visited ) & find_path_recursive( Next, Target, [ Next | Visited ], Path ).
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }

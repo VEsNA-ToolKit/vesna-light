@@ -5,7 +5,7 @@ const SPEED = 10.0
 const ACCELERATION = 8.0
 const JUMP_VELOCITY = 4.5
 
-const PORT : int = 9080
+@export var PORT : int
 var tcp_server := TCPServer.new()
 var ws := WebSocketPeer.new()
 
@@ -28,7 +28,7 @@ func _ready() -> void:
 	for region in get_node( "/root/Root/NavigationRegion3D/Regions").get_children():
 		region.connect( "body_entered", func( body) : _on_area_body_entered( region.name, body ) )
 	for door in get_node("/root/Root/NavigationRegion3D/Doors").get_children():
-		door.connect( "body_entered", func( body) : _on_area_body_entered( door.name, body ) )
+		door.get_node("Area3D").connect( "body_entered", func( body) : _on_area_body_entered( door.name, body ) )
 	play_idle()
 	
 func _process(delta: float) -> void:
