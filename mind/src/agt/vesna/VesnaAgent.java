@@ -1,10 +1,13 @@
 package vesna;
 
+import jason.JasonException;
 import jason.asSemantics.*;
 import jason.asSyntax.*;
 import static jason.asSyntax.ASSyntax.*;
 
 import java.net.URI;
+
+import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
 public class VesnaAgent extends Agent implements WsClientMsgHandler {
@@ -19,11 +22,26 @@ public class VesnaAgent extends Agent implements WsClientMsgHandler {
         // TODO: add a check of belief existence
         Unifier address_unifier = new Unifier();
         believes( parseLiteral( "address( Address )" ), address_unifier );
-        String address = address_unifier.get( "Address" ).toString();
 
         Unifier port_unifier = new Unifier();
         believes( parseLiteral( "port( Port )" ), port_unifier );
+
+        if ( address_unifier.get( "Address" ) == null ) {
+            if ( port_unifier.get( "Port" ) == null ) {
+                stop( "address and port beliefs are not defined!" );
+                return;
+            }
+            stop( "address belief is not defined!" );
+            return;
+        } else if ( port_unifier.get( "Port" ) == null ) {
+            stop( "port belief is not defined!" );
+            return;
+        }
+
+
+        String address = address_unifier.get( "Address" ).toString();
         int port = ( int ) ( ( NumberTerm ) port_unifier.get( "Port" ) ).solve();
+
         System.out.println( "Body is at " + address + ":" + port );
 
         URI body_address = new URI( "ws://" + address + ":" + port );
@@ -48,8 +66,11 @@ public class VesnaAgent extends Agent implements WsClientMsgHandler {
         // // } catch ( Exception e ) {
         // //     e.printStackTrace();
         // // }
-        Message signal = new Message( "signal", getTS().getAgArch().getAgName(), "self" , perception );
-        getTS().getAgArch().sendMsg( signal );
+        try {
+            Message signal = new Message( "signal", getTS().getAgArch().getAgName(), "self" , perception );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
     }
 
     private void handle_event( JSONObject event ) {
@@ -89,5 +110,15 @@ public class VesnaAgent extends Agent implements WsClientMsgHandler {
             default:
                 System.out.println( "Unknown message type: " + type );
         }
+    }
+
+    private void stop( String reason ) {
+        System.out.println( "[ERROR] " + reason );
+        // // try {
+        // //     addBel( createLiteral( "error", createString( reason ) ) );
+        // // } catch( Exception e ){
+        // //     e.printStackTrace();
+        // // }
+        this.stopAg();
     }
 }
