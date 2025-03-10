@@ -9,14 +9,14 @@ import org.json.JSONObject;
 
 public class walk extends DefaultInternalAction {
 
-    private static Set<String> available_actions = Set.of( "random", "stop", "door" );
+    private static Set<String> available_actions = Set.of( "random", "stop", "door", "walk" );
 
     @Override
     public Object execute( TransitionSystem ts, Unifier un, Term[] args ) throws Exception {
 
         String target = args[0].toString();
-        // if ( !available_actions.contains( target ) )
-        //     throw new Exception( "Available arguments for functor 'walk' are: " + available_actions.toString() + ", given: " + target );
+        if ( !available_actions.contains( target ) )
+            throw new Exception( "Available arguments for functor 'walk' are: " + available_actions.toString() + ", given: " + target );
 
         long id = -1;
         switch ( target ) {
@@ -25,6 +25,9 @@ public class walk extends DefaultInternalAction {
                 break;
             case "door":
                 id = (long)( (NumberTerm) args[1] ).solve();
+                break;
+            case "walk":
+                id = 0;
                 break;
             default:
                 System.out.println( "Action " + target + " not implemented yet" );

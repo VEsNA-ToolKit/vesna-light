@@ -12,46 +12,53 @@ import java.net.URI;
 import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 
-public class VesnaAgent extends Agent{// implements WsClientMsgHandler {
+// VesnaAgent class extends the Agent class making the agent embodied;
+// It connects to the body using a WebSocket connection;
+// It needs two beliefs: address( ADDRESS ) and port( PORT ) that describe the address and port of the WebSocket server;
+// In order to use it you should add to your .jcm:
+// > agent alice:alice.asl {
+// >      beliefs: address( localhost )
+// >               port( 8080 )
+// >      ag-class: vesna.VesnaAgent    
+// > }
+
+public class VesnaAgent extends Agent{
 
     private WsClient client;
     private String my_name;
 
+    // Override loadInitialAS method to connect to the WebSocket server (body)
     @Override
     public void loadInitialAS( String asSrc ) throws Exception {
 
         super.loadInitialAS( asSrc );
         my_name = getTS().getAgArch().getAgName();
 
-        // TODO: add a check of belief existence
+        // Get the address from beliefs
         Unifier address_unifier = new Unifier();
         believes( parseLiteral( "address( Address )" ), address_unifier );
 
+        // Get the port from beliefs
         Unifier port_unifier = new Unifier();
         believes( parseLiteral( "port( Port )" ), port_unifier );
 
-        if ( address_unifier.get( "Address" ) == null ) {
-            if ( port_unifier.get( "Port" ) == null ) {
+        // Check if the address and port beliefs are defined
+        if ( address_unifier.get( "Address" ) == null || port_unifier.get( "Port" ) == null ) {
                 stop( "address and port beliefs are not defined!" );
                 return;
-            }
-            stop( "address belief is not defined!" );
-            return;
-        } else if ( port_unifier.get( "Port" ) == null ) {
-            stop( "port belief is not defined!" );
-            return;
         }
 
-
+        // Store address and port in variables and initialize the WebSocket client
         String address = address_unifier.get( "Address" ).toString();
         int port = ( int ) ( ( NumberTerm ) port_unifier.get( "Port" ) ).solve();
 
-        System.out.println( "Body is at " + address + ":" + port );
+        System.out.printf( "[%s] Body is at %s:%d%n", my_name, address, port );
 
         URI body_address = new URI( "ws://" + address + ":" + port );
         client = new WsClient( body_address );
-        client.setMsgHandler( new WsClientMsgHandler() {
 
+        // Connect the two handle functions to the client object
+        client.setMsgHandler( new WsClientMsgHandler() {
             @Override
             public void handle_msg( String msg ) {
                 vesna_handle_msg( msg );
@@ -62,24 +69,17 @@ public class VesnaAgent extends Agent{// implements WsClientMsgHandler {
                 vesna_handle_error( ex );
             }
         }  );
+        // Connect the body
         client.connect();
     }
 
+    // perform sends an action to the body
     public void perform( String action ) {
         client.send( action );
     }
 
+    // sense signals the mind about a perception
     private void sense( Literal perception ) {
-        // // try {
-        // //     InternalAction signal = getIA( ".signal" );
-        // //     StringTerm type = createString( "+" + perception.toString() );
-        // //     Unifier un = new Unifier();
-        // //     TransitionSystem ts = getTS();
-        // //     Term[] event_list = new Term[] { type };
-        // //     signal.execute( ts, un, event_list );
-        // // } catch ( Exception e ) {
-        // //     e.printStackTrace();
-        // // }
         try {
             Message signal = new Message( "signal", my_name, "self" , perception );
         } catch ( Exception e ) {
@@ -87,6 +87,7 @@ public class VesnaAgent extends Agent{// implements WsClientMsgHandler {
         }
     }
 
+    // handle_event takes all the data from an event and senses a perception
     private void handle_event( JSONObject event ) {
         String event_type = event.getString( "type" );
         String event_status = event.getString( "status" );
@@ -95,6 +96,7 @@ public class VesnaAgent extends Agent{// implements WsClientMsgHandler {
         sense(perception);
     }
 
+    // handle_sight takes all the data from a sight and adds a belief
     private void handle_sight( JSONObject sight ) {
         String object = sight.getString( "sight" );
         long id = sight.getLong( "id" );
@@ -106,6 +108,8 @@ public class VesnaAgent extends Agent{// implements WsClientMsgHandler {
         }
     }
 
+    // this function handles incoming messages from the body
+    // available types are: signal, sight
     public void vesna_handle_msg( String msg ) {
         System.out.println( "Received message: " + msg );
         JSONObject log = new JSONObject( msg );
@@ -125,23 +129,20 @@ public class VesnaAgent extends Agent{// implements WsClientMsgHandler {
         }
     }
 
+    // Stops the agent: prints a message and kills the agent
     private void stop( String reason ) {
         System.out.println( "[" + my_name + " ERROR] " + reason );
-        // // try {
-        // //     addBel( createLiteral( "error", createString( reason ) ) );
-        // // } catch( Exception e ){
-        // //     e.printStackTrace();
-        // // }
-        // // this.stopAg();
         kill_agent();
     }
 
+    // Handles a connection error: prints a message and kills the agent
     public void vesna_handle_error( Exception ex ){
         System.out.println( "[" + my_name + " ERROR] " + ex.getMessage() );
-        // // this.stopAg();
         kill_agent();
     }
 
+    // Kills the agent calling the internal actions to drop all desires, intentions and events and then kill the agent;
+    // This is necessary to avoid the agent to keep running after the kill_agent call ( that otherwise is simply enqueued ).
     private void kill_agent() {
         System.out.println( "[" + my_name + " ERROR] Killing agent" );
         try {

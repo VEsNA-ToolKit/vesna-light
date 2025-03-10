@@ -5,6 +5,8 @@ import jason.asSyntax.*;
 
 import org.json.JSONObject;
 
+// updateRegion sends to the body the signal of a new region in which the user is located;
+// region management is performed by the body.
 public class updateRegion extends DefaultInternalAction {
    
     @Override
