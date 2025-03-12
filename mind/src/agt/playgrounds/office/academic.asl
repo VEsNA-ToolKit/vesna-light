@@ -1,5 +1,4 @@
-{ include( "vesna.asl" ) }
-// // { include( "kqml_s.asl" ) }
+// { include( "vesna.asl" ) }
 
 +!go_to_work
     :   .my_name( Me ) & my_desk( MyDesk )
@@ -26,7 +25,6 @@
 +!speak_with( Privacy, Person, Performative, Msg )
     <-  get_location( Person, Location );
         !go_to( Location );
-        // // kqml_s.send( Privacy, Person, Performative, Msg ).
         .send( Privacy, Person, Performative, Msg ).
 
 +!print( Stuff )
