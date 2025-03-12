@@ -9,7 +9,6 @@ import org.json.JSONObject;
 
 public class walk extends DefaultInternalAction {
 
-    // // private static Set<String> available_actions = Set.of( "random", "stop", "door", "walk" );
     // walk()               performs a step
     // walk(n)              performs a step of length n
     // walk( target )       goes to target
@@ -31,9 +30,6 @@ public class walk extends DefaultInternalAction {
         else 
             return false;
 
-        // // String target = args[0].toString();
-        // // if ( !available_actions.contains( target ) )
-        // //     throw new Exception( "Available arguments for functor 'walk' are: " + available_actions.toString() + ", given: " + target );
         JSONObject data = new JSONObject();
         data.put( "type", type );
         if ( type.equals( "step" ) ){
@@ -46,29 +42,10 @@ public class walk extends DefaultInternalAction {
                 data.put( "id", ( ( NumberTerm ) args[1] ).solve() );
         }
 
-        // // long id = -1;
-        // // switch ( target ) {
-        // //     case "random":
-        // //         id = 0;
-        // //         break;
-        // //     case "door":
-        // //         id = (long)( (NumberTerm) args[1] ).solve();
-        // //         break;
-        // //     case "walk":
-        // //         id = 0;
-        // //         break;
-        // //     default:
-        // //         System.out.println( "Action " + target + " not implemented yet" );
-        // //         break;
-        // // }
-
         JSONObject action = new JSONObject();
         action.put( "sender", ts.getAgArch().getAgName() );
         action.put( "receiver", "body" );
         action.put( "type", "walk" );
-        // // JSONObject data = new JSONObject();
-        // // data.put( "target", target );
-        // // data.put( "id", id );
         action.put( "data", data );
 
         VesnaAgent ag = ( VesnaAgent ) ts.getAg();

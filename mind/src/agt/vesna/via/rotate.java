@@ -1,4 +1,4 @@
-package agt.vesna;
+package vesna;
 
 import jason.asSemantics.*;
 import jason.asSyntax.*;
