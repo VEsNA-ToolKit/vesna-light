@@ -89,12 +89,16 @@ func manage( intention : Dictionary ) -> void:
 	var type : String = intention[ 'type' ]
 	var data : Dictionary = intention[ 'data' ]
 	if type == 'walk':
-		var target : String = data[ 'target' ]
-		var id : int = data[ 'id' ]
-		walk( target, id )
-	elif type == 'region':
-		var new_region : String = data[ 'region' ]
-		update_region( new_region )
+		if data[ 'type' ] == 'goto':
+			var target : String = data[ 'target' ]
+			if data.has( 'id' ):
+				var id : int = data[ 'id' ]
+				walk( target, id )
+			else:
+				walk( target, -1 )
+	#elif type == 'region':
+		#var new_region : String = data[ 'region' ]
+		#update_region( new_region )
 
 func walk( target, id ):
 	var target_region = get_node("/root/Root/NavigationRegion3D/Markers/" + target )

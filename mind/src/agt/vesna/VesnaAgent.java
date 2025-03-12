@@ -81,7 +81,8 @@ public class VesnaAgent extends Agent{
     // sense signals the mind about a perception
     private void sense( Literal perception ) {
         try {
-            Message signal = new Message( "signal", my_name, "self" , perception );
+            Message signal = new Message( "signal", my_name, my_name , perception );
+            getTS().getAgArch().sendMsg( signal );
         } catch ( Exception e ) {
             e.printStackTrace();
         }

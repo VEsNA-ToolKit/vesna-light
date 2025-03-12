@@ -10,7 +10,7 @@ import org.json.JSONObject;
 public class walk extends DefaultInternalAction {
 
     // walk()               performs a step
-    // walk(n)              performs a step of length n
+    // walk( n )            performs a step of length n
     // walk( target )       goes to target
     // walk( target, it )   goes to target with id
 
@@ -27,6 +27,8 @@ public class walk extends DefaultInternalAction {
                 type = "goto";
         } else if ( args.length == 2 && args[0].isLiteral() && args[1].isNumeric() )
             type = "goto";
+        else if ( args.length == 2 && args[0].isLiteral() && !args[1].isGround() )
+            type = "goto";
         else 
             return false;
 
@@ -38,7 +40,7 @@ public class walk extends DefaultInternalAction {
             }
         } else if ( type.equals( "goto" ) ) {
             data.put( "target", args[0].toString() );
-            if ( args.length == 2 )
+            if ( args.length == 2 && args[1].isGround() )
                 data.put( "id", ( ( NumberTerm ) args[1] ).solve() );
         }
 

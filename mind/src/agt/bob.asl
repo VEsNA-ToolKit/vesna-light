@@ -1,5 +1,5 @@
 { include( "vesna.asl" ) }
-{ include( "playground.asl" ) }
+{ include( "playgrounds/office.asl" ) }
 
 +!start
     :   .my_name( Me )

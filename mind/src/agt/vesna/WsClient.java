@@ -32,7 +32,7 @@ public class WsClient extends WebSocketClient {
 
 	@Override
 	public void onClose(int code, String reason, boolean remote) {
-		System.out.println("[WSCLIENT] Closed with exit code " + code + " additional info: " + reason);
+		System.out.println("[WsClient] Closed with exit code " + code + " additional info: " + reason);
 	}
 
 	@Override
@@ -49,7 +49,6 @@ public class WsClient extends WebSocketClient {
 
 	@Override
 	public void onError(Exception ex) {
-		// // System.err.println("an error occurred:" + ex);
 		if ( msgHandler != null )
 			msgHandler.handle_error( ex );
 	}

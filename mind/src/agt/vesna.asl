@@ -59,8 +59,8 @@ same_region( Region1, Region2 ) :- ntpp( Region1, SuperRegion ) & ntpp( Region2,
 
 +!follow_path( [ Head | Tail ] )
     :   .my_name( Me )
-    <-  .print( "Moving to ", Head );
-        vesna.walk( Head, _ );
+    <-  .print( "Moving to ", Head, " : ", Tail );
+        vesna.walk( Head );
         .wait( {+movement( completed, destination_reached ) } );
         -ntpp( Me, _ );
         +ntpp( Me, Head );
