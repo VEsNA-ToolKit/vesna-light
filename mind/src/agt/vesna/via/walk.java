@@ -12,7 +12,7 @@ public class walk extends DefaultInternalAction {
     // walk()               performs a step
     // walk( n )            performs a step of length n
     // walk( target )       goes to target
-    // walk( target, it )   goes to target with id
+    // walk( target, id )   goes to target with id
 
     @Override
     public Object execute( TransitionSystem ts, Unifier un, Term[] args ) throws Exception {
