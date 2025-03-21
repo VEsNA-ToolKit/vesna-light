@@ -66,6 +66,30 @@ same_region( Region1, Region2 ) :- ntpp( Region1, SuperRegion ) & ntpp( Region2,
         +ntpp( Me, Head );
         !follow_path( Tail ).
 
++!use( ArtName )
+    :   .my_name( Me ) & ntpp( Me, MyRegion )
+    <-  use( ArtName, MyRegion ).
+
+-!use( ArtName )
+    <-  .print( "I cannot use ", ArtName ).
+
++!free( ArtName )
+    <-  free( ArtName ).
+
++!grab( ArtName )
+    :   .my_name( Me ) & ntpp( Me, MyRegion )
+    <-  grab( ArtName, MyRegion ).
+
+-!grab( ArtName )
+    <-  .print( "I cannot grab ", ArtName ).
+
++!release( ArtName )
+    :   .my_name( Me ) & ntpp( Me, MyRegion )
+    <-  release( ArtName, MyRegion ).
+
+-!release( ArtName )
+    <-  .print( "Cannot release ", ArtName ).
+
 find_path( Start, Target, Path ) :- find_path_recursive( Start, Target, [ Start ], Path ).
 
 find_path_recursive( Target, Target, Visited, Visited ).

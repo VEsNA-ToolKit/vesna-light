@@ -15,10 +15,17 @@ mas vesna {
     // }
     agent charlie:charlie.asl {
         goals:  start
+        join: wp
+    }
+
+    agent david:charlie.asl {
+        goals:  start
+        join: wp
     }
 
     workspace wp {
-        artifact prova : vesna.VesnaArtifact
+        artifact coffee_machine: vesna.SituatedArtifact( "kitchen", 1 )
+        artifact cup: vesna.GrabbableArtifact( "kitchen" )
     }
 
 }
