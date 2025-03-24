@@ -3,6 +3,11 @@ package vesna;
 import cartago.Artifact;
 import cartago.OPERATION;
 
+import jason.infra.local.LocalAgArch;
+import jason.infra.local.RunLocalMAS;
+
+import org.json.JSONObject;
+
 public class GrabbableArtifact extends Artifact {
 
     private String owner;
@@ -31,6 +36,20 @@ public class GrabbableArtifact extends Artifact {
         this.owner = ag_name;
 
         log( ag_name + " has grabbed " + this.art_name );
+
+        JSONObject action = new JSONObject();
+        action.put( "sender", ag_name );
+        action.put( "receiver", "body" );
+        action.put( "type", "interact" );
+        JSONObject data = new JSONObject();
+        data.put( "type", "grab" );
+        data.put( "art_name", art_name );
+        action.put( "data", data );
+
+        LocalAgArch ag_arch = jason.infra.local.RunLocalMAS.getRunner().getAg( ag_name );
+        VesnaAgent ag = ( VesnaAgent ) ag_arch.getTS().getAg();
+
+        ag.perform( action.toString() ); 
     }
 
     @OPERATION
@@ -44,6 +63,21 @@ public class GrabbableArtifact extends Artifact {
             failed( "Agent " + ag_name + " was not grabbing the artifact" + art_name );
 
         owner = null;
+        log( ag_name + " releases " + art_name );
+
+        JSONObject action = new JSONObject();
+        action.put( "sender", ag_name );
+        action.put( "receiver", "body" );
+        action.put( "type", "interact" );
+        JSONObject data = new JSONObject();
+        data.put( "type", "release" );
+        data.put( "art_name", art_name );
+        action.put( "data", data );
+
+        LocalAgArch ag_arch = jason.infra.local.RunLocalMAS.getRunner().getAg( ag_name );
+        VesnaAgent ag = ( VesnaAgent ) ag_arch.getTS().getAg();
+
+        ag.perform( action.toString() ); 
     }
     
 }

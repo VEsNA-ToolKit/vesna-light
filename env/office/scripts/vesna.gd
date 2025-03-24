@@ -1,6 +1,5 @@
 extends CharacterBody3D
 
-
 const SPEED = 10.0
 const ACCELERATION = 8.0
 const JUMP_VELOCITY = 4.5
@@ -96,6 +95,19 @@ func manage( intention : Dictionary ) -> void:
 				walk( target, id )
 			else:
 				walk( target, -1 )
+	elif type == 'interact':
+		if data[ 'type' ] == 'use':
+			var art_name : String = data[ 'art_name' ]
+			use( art_name )
+		elif data[ 'type' ] == 'grab':
+			var art_name : String = data[ 'art_name' ]
+			grab( art_name )
+		elif data[ 'type' ] == 'free':
+			var art_name : String = data[ 'art_name' ]
+			free_art( art_name )
+		elif data[ 'type' ] == 'release':
+			var art_name : String = data[ 'art_name' ]
+			release( art_name )
 	#elif type == 'region':
 		#var new_region : String = data[ 'region' ]
 		#update_region( new_region )
@@ -110,6 +122,18 @@ func walk( target, id ):
 	target_movement = target
 	play_run()
 	end_communication = false
+	
+func use( art_name: String ):
+	print( "I want to use " + art_name )
+	
+func grab( art_name: String ):
+	print( "I want to grab " + art_name )
+
+func free_art( art_name : String ):
+	print( "I free " + art_name )
+	
+func release( art_name : String ):
+	print( "I release " + art_name )
 	
 func signal_end_movement( ) -> void:
 	target_movement = "empty"

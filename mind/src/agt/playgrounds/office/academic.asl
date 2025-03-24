@@ -19,8 +19,10 @@
 +!take_coffe
     <-  !go_to(  coffee_machine );
         .print( "I'm taking a coffee" );
+        !use( coffee_machine );
         .wait( 5000 );
-        .print( "Back to work!" ).
+        .print( "Back to work!" );
+        !free( coffee_machine ).
 
 +!speak_with( Privacy, Person, Performative, Msg )
     <-  get_location( Person, Location );

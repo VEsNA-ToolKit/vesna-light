@@ -2,8 +2,14 @@ package vesna;
 
 import cartago.Artifact;
 import cartago.OPERATION;
+import jason.infra.local.LocalAgArch;
+import jason.infra.local.RunLocalMAS;
+import jason.asSemantics.Agent;
 
 import java.util.List;
+
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class SituatedArtifact extends Artifact{
@@ -44,6 +50,19 @@ public class SituatedArtifact extends Artifact{
         using.add( ag_name );
         log( ag_name + " can use " + this.art_name );
 
+        JSONObject action = new JSONObject();
+        action.put( "sender", ag_name );
+        action.put( "receiver", "body" );
+        action.put( "type", "interact" );
+        JSONObject data = new JSONObject();
+        data.put( "type", "use" );
+        data.put( "art_name", art_name );
+        action.put( "data", data );
+
+        LocalAgArch ag_arch = jason.infra.local.RunLocalMAS.getRunner().getAg( ag_name );
+        VesnaAgent ag = ( VesnaAgent ) ag_arch.getTS().getAg();
+
+        ag.perform( action.toString() ); 
     }
 
     @OPERATION
@@ -59,6 +78,21 @@ public class SituatedArtifact extends Artifact{
         }
 
         using.remove( ag_name );
+        log( ag_name + " frees " + art_name );
+
+        JSONObject action = new JSONObject();
+        action.put( "sender", ag_name );
+        action.put( "receiver", "body" );
+        action.put( "type", "interact" );
+        JSONObject data = new JSONObject();
+        data.put( "type", "free" );
+        data.put( "art_name", art_name );
+        action.put( "data", data );
+
+        LocalAgArch ag_arch = jason.infra.local.RunLocalMAS.getRunner().getAg( ag_name );
+        VesnaAgent ag = ( VesnaAgent ) ag_arch.getTS().getAg();
+
+        ag.perform( action.toString() ); 
     }
 
     public boolean is_using( String ag_name ) {

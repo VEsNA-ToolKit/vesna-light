@@ -1,31 +1,33 @@
 mas vesna {
     
-    // agent alice:alice.asl {
-    //     beliefs:    address( localhost )
-    //                 port( 9081 )
-    //     goals:      start
-    //     ag-class:   vesna.VesnaAgent
-    // }
-
-    // agent bob:bob.asl {
-    //     beliefs:    address( localhost )
-    //                 port( 9080 )
-    //     goals:      start
-    //     ag-class:   vesna.VesnaAgent
-    // }
-    agent charlie:charlie.asl {
-        goals:  start
-        join: wp
+    agent alice:alice.asl {
+        beliefs:    address( localhost )
+                    port( 9081 )
+        goals:      start
+        ag-class:   vesna.VesnaAgent
+        join:       wp
     }
 
-    agent david:charlie.asl {
-        goals:  start
-        join: wp
+    agent bob:bob.asl {
+        beliefs:    address( localhost )
+                    port( 9080 )
+        goals:      start
+        ag-class:   vesna.VesnaAgent
+        join:       wp
     }
+    // agent charlie:charlie.asl {
+    //     goals:  start
+    //     join: wp
+    // }
+
+    // agent david:charlie.asl {
+    //     goals:  start
+    //     join: wp
+    // }
 
     workspace wp {
-        artifact coffee_machine: vesna.SituatedArtifact( "kitchen", 1 )
-        artifact cup: vesna.GrabbableArtifact( "kitchen" )
+        artifact coffee_machine: vesna.SituatedArtifact( "common", 1 )
+        artifact cup: vesna.GrabbableArtifact( "common" )
     }
 
 }
