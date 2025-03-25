@@ -77,7 +77,7 @@ public class GrabbableArtifact extends Artifact {
         LocalAgArch ag_arch = jason.infra.local.RunLocalMAS.getRunner().getAg( ag_name );
         VesnaAgent ag = ( VesnaAgent ) ag_arch.getTS().getAg();
 
-        ag.perform( action.toString() ); 
+        ag.perform( action.toString() );
     }
     
 }

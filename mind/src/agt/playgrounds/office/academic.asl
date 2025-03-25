@@ -17,8 +17,13 @@
         !work.
 
 +!take_coffe
-    <-  !go_to(  coffee_machine );
-        .print( "I'm taking a coffee" );
+    :   .my_name( Me ) & not at( coffee_machine ) & not ntpp( Me, common )
+    <-  .print( "Going to take a coffee" );
+        !go_to( coffee_machine );
+        !take_coffe.
+
++!take_coffe
+    <-  .print( "I'm taking a coffee" );
         !use( coffee_machine );
         .wait( 5000 );
         .print( "Back to work!" );

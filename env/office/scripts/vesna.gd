@@ -108,31 +108,55 @@ func manage( intention : Dictionary ) -> void:
 		elif data[ 'type' ] == 'release':
 			var art_name : String = data[ 'art_name' ]
 			release( art_name )
-	#elif type == 'region':
-		#var new_region : String = data[ 'region' ]
-		#update_region( new_region )
 
 func walk( target, id ):
-	var target_region = get_node("/root/Root/NavigationRegion3D/Markers/" + target )
+	var target_region = get_node_or_null("/root/Root/NavigationRegion3D/Markers/" + target )
 	if target_region == null:
-		target_region = get_node("/root/Root/NavigationRegion3D/Regions/" + target )
+		target_region = get_node_or_null("/root/Root/NavigationRegion3D/Regions/" + target )
 	if target_region == null:
-		target_region = get_node("/root/Root/NavigationRegion3D/Doors/" + target )
+		target_region = get_node_or_null("/root/Root/NavigationRegion3D/Doors/" + target )
 	navigator.set_target_position( target_region.global_position )
 	target_movement = target
 	play_run()
 	end_communication = false
+
+func get_obj_from_group( art_name : String, group_name : String ):
+	var group_objs = get_tree().get_nodes_in_group( group_name )
+	for group_obj in group_objs:
+		if art_name == group_obj.name:
+			return group_obj
+	return null
 	
 func use( art_name: String ):
 	print( "I want to use " + art_name )
 	
 func grab( art_name: String ):
+	var art = get_obj_from_group( art_name, "GrabbableArtifact")
+	if art == null:
+		print( "Object not found!")
+		return
+	var right_hand = get_node( "Body/Root/Skeleton3D/RightHand" )
+	#art.global_position = Vector3.ZERO
+	art.reparent( right_hand )
+	#art.global_transform.origin = right_hand.position
+	art.transform.origin = Vector3.ZERO
 	print( "I want to grab " + art_name )
 
 func free_art( art_name : String ):
 	print( "I free " + art_name )
 	
 func release( art_name : String ):
+	var release_points = get_tree().get_nodes_in_group( "ReleasePoint" )
+	var nearest_release
+	var nearest_dist = 1000
+	for release_point in release_points:
+		var cur_dist = release_point.global_position.distance_to( global_position )
+		if  cur_dist < nearest_dist:
+			nearest_release = release_point
+			nearest_dist = cur_dist
+	var art = get_obj_from_group( art_name, "GrabbableArtifact" )
+	art.reparent( nearest_release )
+	art.transform.origin = Vector3.ZERO
 	print( "I release " + art_name )
 	
 func signal_end_movement( ) -> void:
