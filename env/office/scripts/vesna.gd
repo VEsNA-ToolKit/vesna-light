@@ -20,6 +20,9 @@ var target_movement : String = "empty"
 @onready var idle_anim = $Body/Idle
 @onready var run_anim = $Body/Run
 
+@export var desired_separation: float = 3.0  # distanza minima desiderata
+@export var separation_weight: float = 5.0   # peso della forza di separazione
+
 func _ready() -> void:
 	if tcp_server.listen( PORT ) != OK:
 		push_error( "Unable to start the srver" )
@@ -49,6 +52,8 @@ func _physics_process(delta: float) -> void:
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
+		
+	#var target_direction: Vector3 = (navigator.get_next_path_position() - global_transform.origin).normalized()
 	
 	if navigator.is_target_reached() or navigator.is_navigation_finished():
 		play_idle()
@@ -60,15 +65,12 @@ func _physics_process(delta: float) -> void:
 	elif not navigator.is_navigation_finished():
 		play_run()
 		var direction = ( navigator.get_next_path_position() - global_position ).normalized()
-		rotation.y = atan2( -direction.z, direction.x )
+		var avoidance_force = get_avoidance_force()
+		var final_direction = ( direction + avoidance_force ).normalized()
+		rotation.y = atan2( -final_direction.z, final_direction.x )
 		
-		velocity = velocity.lerp( direction * SPEED, ACCELERATION * delta )
-		
-	#else:
-		#velocity.x = 0
-		#velocity.z = 0
-		#play_idle()
-#
+		velocity = velocity.lerp( final_direction * SPEED, ACCELERATION * delta )
+	
 	move_and_slide()
 	
 func _on_area_body_entered( region_name, body ):
@@ -81,6 +83,19 @@ func _on_area_body_entered( region_name, body ):
 func _exit_tree() -> void:
 	ws.close()
 	tcp_server.stop()
+	
+func get_avoidance_force() -> Vector3:
+	var force: Vector3 = Vector3.ZERO
+	# Supponiamo che tutti i CharacterBody3D siano nel gruppo "players"
+	for other in get_tree().get_nodes_in_group("agents"):
+		if other == self:
+			continue
+		var diff = global_transform.origin - other.global_transform.origin
+		var distance = diff.length()
+		if distance < desired_separation and distance > 0:
+			# La forza cresce quando la distanza diminuisce
+			force += diff.normalized() / distance
+	return force * separation_weight
 
 func manage( intention : Dictionary ) -> void:
 	var sender : String = intention[ 'sender' ]
@@ -135,9 +150,13 @@ func grab( art_name: String ):
 	if art == null:
 		print( "Object not found!")
 		return
-	var right_hand = get_node( "Body/Root/Skeleton3D/RightHand" )
+	print( "I take the hand" )
+	var right_hand = get_node_or_null( "Body/Root/Skeleton3D/RightHand" )
+	if ( right_hand == null ):
+		print( "Oh no I do not have a hand!")
 	#art.global_position = Vector3.ZERO
 	art.reparent( right_hand )
+	print( "reparent done" )
 	#art.global_transform.origin = right_hand.position
 	art.transform.origin = Vector3.ZERO
 	print( "I want to grab " + art_name )

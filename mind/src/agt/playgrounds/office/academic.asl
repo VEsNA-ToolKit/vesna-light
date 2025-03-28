@@ -23,11 +23,24 @@
         !take_coffe.
 
 +!take_coffe
-    <-  .print( "I'm taking a coffee" );
-        !use( coffee_machine );
-        .wait( 5000 );
-        .print( "Back to work!" );
-        !free( coffee_machine ).
+    :   not grab( Cup )
+    <-  !grab( Cup ).
+
++!take_coffe
+    :   grab( Cup )
+    <-  !use( coffee_machine );
+        make_coffee( Cup );
+        .wait(1000);
+        !free( coffee_machine );
+        .wait( 4000 );
+        .print( "I drank a coffee!" ).
+
+// +!take_coffe
+//     <-  .print( "I'm taking a coffee" );
+//         !use( coffee_machine );
+//         .wait( 5000 );
+//         .print( "Back to work!" );
+//         !free( coffee_machine ).
 
 +!speak_with( Privacy, Person, Performative, Msg )
     <-  get_location( Person, Location );

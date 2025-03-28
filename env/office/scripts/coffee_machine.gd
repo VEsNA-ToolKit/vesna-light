@@ -26,6 +26,12 @@ func _process(delta: float) -> void:
 			
 func manage( intention : Dictionary ):
 	print( "manage " + str( intention ) )
+	if intention[ "type" ] == "interaction":
+		var data = intention[ "data" ]
+		if data[ "type" ] == "make_coffee":
+			get_node( "CPUParticles3D" ).visible = true
+			await get_tree().create_timer(2).timeout
+			get_node( "CPUParticles3D" ).visible = false
 
 func make_coffee():
 	get_node( "CPUParticles3D" ).visible = true

@@ -66,26 +66,31 @@ same_region( Region1, Region2 ) :- ntpp( Region1, SuperRegion ) & ntpp( Region2,
         +ntpp( Me, Head );
         !follow_path( Tail ).
 
+// ARTIFACT INTERACTIONS
 +!use( ArtName )
     :   .my_name( Me ) & ntpp( Me, MyRegion )
-    <-  use( ArtName, MyRegion ).
+    <-  lookupArtifact( ArtName, ArtId );
+        use( MyRegion )[ artifact_id( ArtId ) ].
 
 -!use( ArtName )
     <-  .print( "I cannot use ", ArtName ).
 
 +!free( ArtName )
-    <-  free( ArtName ).
+    <-  lookupArtifact( ArtName, ArtId );
+        free[ artifact_id( ArtId ) ].
 
 +!grab( ArtName )
     :   .my_name( Me ) & ntpp( Me, MyRegion )
-    <-  grab( ArtName, MyRegion ).
+    <-  lookupArtifact( ArtName, ArtId );
+        grab( MyRegion )[ artifact_id( ArtId ) ].
 
 -!grab( ArtName )
     <-  .print( "I cannot grab ", ArtName ).
 
 +!release( ArtName )
     :   .my_name( Me ) & ntpp( Me, MyRegion )
-    <-  release( ArtName, MyRegion ).
+    <-  lookupArtifact( ArtName, ArtId );
+        release( MyRegion )[ artifact_id( ArtId ) ].
 
 -!release( ArtName )
     <-  .print( "Cannot release ", ArtName ).

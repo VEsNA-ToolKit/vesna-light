@@ -19,7 +19,11 @@ public class SituatedArtifact extends Artifact{
     private int limit;
     private List<String> using;
 
-    void init( String region, int limit ) {
+    public String get_art_name() {
+        return this.art_name;
+    }
+
+    public void init( String region, int limit ) {
         this.region = region;
         this.limit = limit;
         using = new ArrayList<String>();
@@ -29,10 +33,7 @@ public class SituatedArtifact extends Artifact{
     }
 
     @OPERATION
-    public void use( String art_name, String ag_region ) {
-
-        if ( ! art_name.equals( this.art_name ) )
-            return;
+    public void use( String ag_region ) {
 
         if ( ! ag_region.equals( this.region ) ) {
             failed( "You cannot use this artifact: it is in another region!" );
@@ -66,10 +67,7 @@ public class SituatedArtifact extends Artifact{
     }
 
     @OPERATION
-    public void free( String art_name ) throws Exception {
-
-        if ( ! art_name.equals( this.art_name ) )
-            return;
+    public void free( ) throws Exception {
 
         String ag_name = getCurrentOpAgentId().getAgentName();
         if ( ! using.contains( ag_name ) ) {

@@ -6,6 +6,8 @@ import cartago.OPERATION;
 import jason.infra.local.LocalAgArch;
 import jason.infra.local.RunLocalMAS;
 
+import static jason.asSyntax.ASSyntax.*;
+
 import org.json.JSONObject;
 
 public class GrabbableArtifact extends Artifact {
@@ -20,17 +22,19 @@ public class GrabbableArtifact extends Artifact {
         this.art_name = getId().getName();
     }
 
+
     @OPERATION
-    public void grab( String art_name, String ag_region ) {
+    public void grab( String ag_region ) throws Exception{
 
-        if ( ! art_name.equals( this.art_name ) )
-            return;
-
-        if ( ! ag_region.equals( this.region ) )
+        if ( ! ag_region.equals( this.region ) ) {
+            log( "You cannot grab this artifact: it is in another region!" );
             failed( "You cannot grab this artifact: it is in another region!" );
+        }
 
-        if ( this.owner != null )
+        if ( this.owner != null ){
+            log( "You cannot grab this artifact: it has already an owner!" );
             failed( "You cannot grab this artifact: it has already an owner!" );
+        }
 
         String ag_name = getCurrentOpAgentId().getAgentName();
         this.owner = ag_name;
@@ -50,19 +54,20 @@ public class GrabbableArtifact extends Artifact {
         VesnaAgent ag = ( VesnaAgent ) ag_arch.getTS().getAg();
 
         ag.perform( action.toString() ); 
+        ag.addBel( parseLiteral( "grab(" + art_name + ")" ) );
     }
 
     @OPERATION
-    public void release( String art_name, String ag_region ) {
+    public void release( String ag_region ) throws Exception {
 
-        if ( ! art_name.equals( this.art_name ) )
-            return;
-        
         String ag_name = getCurrentOpAgentId().getAgentName();
-        if ( ! owner.equals( ag_name ) )
+        if ( ! owner.equals( ag_name ) ){
+            log( "Agent " + ag_name + " was not grabbing the artifact" + art_name );
             failed( "Agent " + ag_name + " was not grabbing the artifact" + art_name );
+        }
 
         owner = null;
+        this.region = ag_region;
         log( ag_name + " releases " + art_name );
 
         JSONObject action = new JSONObject();
@@ -78,6 +83,7 @@ public class GrabbableArtifact extends Artifact {
         VesnaAgent ag = ( VesnaAgent ) ag_arch.getTS().getAg();
 
         ag.perform( action.toString() );
+        ag.delBel( parseLiteral( "grab(" + art_name + ")" ) );
     }
     
 }
