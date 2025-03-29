@@ -7719,6 +7719,9 @@ skeleton = NodePath("../../../..")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/OpenOffice/Postazione2/LampSquareTable2/StaticBody3D"]
 shape = SubResource("ConcavePolygonShape3D_pbkyg")
 
+[node name="release" type="Marker3D" parent="NavigationRegion3D/OpenOffice/Postazione2" groups=["ReleasePoint"]]
+transform = Transform3D(0.970776, 0.158944, -0.179806, -0.162843, 0.986627, -0.00704301, 0.176282, 0.0361173, 0.983677, -1.101, 4.69547, -2.02221)
+
 [node name="Postazione3" type="Node3D" parent="NavigationRegion3D/OpenOffice"]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 111.422, 0, -39.1216)
 
@@ -8117,6 +8120,9 @@ skeleton = NodePath("../../../..")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/OpenOffice/Postazione11/LampSquareTable2/StaticBody3D"]
 shape = SubResource("ConcavePolygonShape3D_jxttp")
+
+[node name="release" type="Marker3D" parent="NavigationRegion3D/OpenOffice/Postazione11" groups=["ReleasePoint"]]
+transform = Transform3D(0.970776, 0.158944, -0.179806, -0.162843, 0.986627, -0.00704301, 0.176282, 0.0361173, 0.983677, -1.101, 4.69547, -2.02221)
 
 [node name="Postazione12" type="Node3D" parent="NavigationRegion3D/OpenOffice"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 104.59, 0, -8.81431)

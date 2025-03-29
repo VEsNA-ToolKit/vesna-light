@@ -70,6 +70,7 @@ same_region( Region1, Region2 ) :- ntpp( Region1, SuperRegion ) & ntpp( Region2,
 +!use( ArtName )
     :   .my_name( Me ) & ntpp( Me, MyRegion )
     <-  lookupArtifact( ArtName, ArtId );
+        focus( ArtId );
         use( MyRegion )[ artifact_id( ArtId ) ].
 
 -!use( ArtName )
@@ -77,6 +78,7 @@ same_region( Region1, Region2 ) :- ntpp( Region1, SuperRegion ) & ntpp( Region2,
 
 +!free( ArtName )
     <-  lookupArtifact( ArtName, ArtId );
+        stopFocus( ArtId );
         free[ artifact_id( ArtId ) ].
 
 +!grab( ArtName )

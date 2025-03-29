@@ -29,11 +29,20 @@ func manage( intention : Dictionary ):
 	if intention[ "type" ] == "interaction":
 		var data = intention[ "data" ]
 		if data[ "type" ] == "make_coffee":
-			get_node( "CPUParticles3D" ).visible = true
-			await get_tree().create_timer(2).timeout
-			get_node( "CPUParticles3D" ).visible = false
+			make_coffee( intention[ "sender" ], data[ "cup" ] )
 
-func make_coffee():
+func make_coffee( art_name : String, cup_name : String ):
 	get_node( "CPUParticles3D" ).visible = true
 	await get_tree().create_timer(5.0).timeout
 	get_node( "CPUParticles3D" ).visible = false
+	var log : Dictionary = {}
+	log[ 'sender' ] = 'artifact'
+	log[ 'receiver' ] = art_name
+	log[ 'type' ] = 'signal'
+	var msg : Dictionary = {}
+	msg[ 'type' ] = 'interaction'
+	msg[ 'status' ] = 'completed'
+	msg[ 'reason' ] = 'coffee_made'
+	msg[ 'cup_name' ] = cup_name
+	log[ 'data' ] = msg
+	ws.send_text( JSON.stringify( log ) )
